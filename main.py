@@ -13,15 +13,28 @@ from IPython.display import clear_output
 clear_output()
 
 
-os.environ['DATAPATH'] = 'data'
-
-for strategy in ['LayerLAP', 'GlobalLAP', 'LayerMagNoBias', 'GlobalMagNoBias', 'OptimalBrainDamage']:
-    for c in [2,4,6,8,10,12,14]:
-        exp = PruningExperiment(dataset='CIFAR10', 
-                                model='MnistNet',
+os.environ['DATAPATH'] = 'data:large_data'
+#compressions = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+#compressions = [10**x for x in np.linspace(0, 2, 11)]
+compressions = [1,2,4,8,16,32]
+"""
+Strategies to include in final result
+Random
+Magnitude
+Gradient Magnitude
+OBD (only with basic CNN network)
+Layer-wise OBS
+SNIP
+GraSP
+SynFlow
+"""
+for strategy in ['LayerLAP', 'GlobalLAP', 'LayerMagNoBias', 'GlobalMagNoBias']:
+    for c in compressions:
+        exp = PruningExperiment(dataset='CIFAR100', 
+                                model='vgg_bn_drop_100',
                                 strategy=strategy,
                                 compression=c,
-                                train_kwargs={'epochs':5},
+                                train_kwargs={'epochs': 50},
                                 pretrained=False)
 
         exp.run()
@@ -40,3 +53,17 @@ plt.gca().set_xticklabels(map(str, 2**np.arange(7)))
 
 df['compression_err'] = (df['real_compression'] - df['compression'])/df['compression']
 plot_df(df, 'compression', 'compression_err', colors='strategy', markers='strategy')
+
+
+
+
+# TODO
+"""
+    - Remove bias layers from pruning computations
+    - Fix models to be simpler (no batchnorms, use sequential forward)
+    - Implement SNIP
+    - Implement Layer-wise OBS
+    - Test LAMP
+    - Implement GraSP
+    - Implement SynFlow
+"""

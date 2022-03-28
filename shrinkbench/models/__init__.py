@@ -11,4 +11,4 @@ from .cifar_resnet import (resnet20,
                            resnet110,
                            resnet1202)
 
-from .cifar_vgg import vgg_bn_drop, vgg_bn_drop_100
+from .cifar_vgg import vgg_bn_drop, vgg_bn_drop_100, vgg_bn_drop_1000

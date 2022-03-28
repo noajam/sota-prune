@@ -59,7 +59,7 @@ def get_params(model, recurse=False):
                                    associated parameter arrays
     """
     params = {k: v.detach().cpu().numpy().copy()
-              for k, v in model.named_parameters(recurse=recurse)}
+              for k, v in model.named_parameters(recurse=recurse) if k=='weight'}
     return params
 
 

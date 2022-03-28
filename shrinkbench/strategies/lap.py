@@ -24,7 +24,7 @@ from .utils import (fraction_threshold,
 class GlobalLAP(VisionPruning):
     # Looks ahead and back at even non-prunable modules
     def model_masks(self):
-        param_dict = self.params(only_prunable=False)
+        param_dict = self.params(only_prunable=True)
         depth = len(param_dict)
         
         self.layers_prev_list = [None] + list(range(depth - 1))
@@ -39,7 +39,6 @@ class GlobalLAP(VisionPruning):
         flat_importances = flatten_importances(importances)
         threshold = fraction_threshold(flat_importances, self.fraction)
         masks = importance_masks(importances, threshold)
-        param_dict = self.params(only_prunable=True)
         for module in param_dict:
             if 'bias' in param_dict[module]:
                 masks[module]['bias'] = np.ones_like(param_dict[module]['bias'])
@@ -58,7 +57,7 @@ class GlobalLAP(VisionPruning):
 
 class LayerLAP(LayerPruning, VisionPruning):
     def layer_masks(self, module, layer):
-        param_dict = self.params()
+        param_dict = self.params(only_prunable=True)
         depth = len(param_dict)
         
         self.layers_prev_list = [None] + list(range(depth - 1))

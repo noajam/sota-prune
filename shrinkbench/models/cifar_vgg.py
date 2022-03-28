@@ -15,18 +15,31 @@ class ConvBNReLU(nn.Module):
 
     def __init__(self, in_planes, out_planes):
         super(ConvBNReLU, self).__init__()
-
+        
+        operations = []
+        operations += [nn.Conv2d(in_planes, out_planes, kernel_size=3, padding=3//2)]
+        operations += [nn.BatchNorm2d(out_planes, eps=1e-3)]
+        operations += [nn.ReLU(inplace=True)]
+        
+        self.operations = nn.Sequential(*operations)
+        
+        """
         self.in_planes = in_planes
         self.out_planes = out_planes
         self.conv = nn.Conv2d(in_planes, out_planes, kernel_size=3, padding=3//2)
         self.bn = nn.BatchNorm2d(out_planes, eps=1e-3)
         self.relu = nn.ReLU(inplace=True)
+        """
 
     def forward(self, x):
+        """
         x = self.conv(x)
         x = self.bn(x)
         x = self.relu(x)
         return x
+        """
+        
+        return self.operations(x)
 
 
 class VGGBnDrop(nn.Module):
@@ -34,9 +47,48 @@ class VGGBnDrop(nn.Module):
     def __init__(self, num_classes=10):
 
         super(VGGBnDrop, self).__init__()
-
+        layers = []
+        layers += [ConvBNReLU(3, 64)]
+        layers += [nn.Dropout(0.3)]
+        layers += [ConvBNReLU(64, 64)]
+        layers += [nn.MaxPool2d(2, 2, ceil_mode=True)]
+        
+        layers += [ConvBNReLU(64, 128)]
+        layers += [nn.Dropout(0.4)]
+        layers += [ConvBNReLU(128, 128)]
+        layers += [nn.MaxPool2d(2, 2, ceil_mode=True)]
+        
+        layers += [ConvBNReLU(128, 256)]
+        layers += [nn.Dropout(0.4)]
+        layers += [ConvBNReLU(256, 256)]
+        layers += [nn.Dropout(0.4)]
+        layers += [ConvBNReLU(256, 256)]
+        layers += [nn.MaxPool2d(2, 2, ceil_mode=True)]
+        
+        layers += [ConvBNReLU(256, 512)]
+        layers += [nn.Dropout(0.4)]
+        layers += [ConvBNReLU(512, 512)]
+        layers += [nn.Dropout(0.4)]
+        layers += [ConvBNReLU(512, 512)]
+        layers += [nn.MaxPool2d(2, 2, ceil_mode=True)]
+        
+        layers += [ConvBNReLU(512, 512)]
+        layers += [nn.Dropout(0.4)]
+        layers += [ConvBNReLU(512, 512)]
+        layers += [nn.Dropout(0.4)]
+        layers += [ConvBNReLU(512, 512)]
+        layers += [nn.MaxPool2d(2, 2, ceil_mode=True)]
+        
+        layers += [nn.Dropout(0.5)]
+        layers += [nn.Linear(512, 512)]
+        layers += [nn.BatchNorm1d(512)]
+        layers += [nn.ReLU(inplace=True)]
+        layers += [nn.Dropout(0.5)]
+        layers += [nn.Linear(512, num_classes)]
+        
+        """
         self.num_classes = num_classes
-
+        
         self.features = nn.Sequential(
 
             ConvBNReLU(3, 64), nn.Dropout(0.3),
@@ -71,16 +123,23 @@ class VGGBnDrop(nn.Module):
             nn.Dropout(0.5),
             nn.Linear(512, self.num_classes),
         )
-
+        
         # To prevent pruning
         self.classifier[-1].is_classifier = True
 
-    def forward(self, input):
+        """
+        self.layers = nn.Sequential(*layers)
+        self.layers[-1].is_classifier = True
 
-        x = self.features(input)
+    def forward(self, x):
+        """
+        x = self.features(x)
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
+        """
+        
+        return self.layers(x)
 
     def reset_weights(self):
 
@@ -112,3 +171,9 @@ def vgg_bn_drop_100(pretrained=True):
     # else:
         # model.reset_weights()
     return model
+
+
+def vgg_bn_drop_1000(pretrained=False):
+    model = VGGBnDrop(num_classes=1000)
+    return model
+        
