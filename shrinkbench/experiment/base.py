@@ -23,7 +23,7 @@ class Experiment(ABC):
         self.seed = seed
         self.frozen = False
         signal.signal(signal.SIGINT, self.SIGINT_handler)
-        signal.signal(signal.SIGQUIT, self.SIGQUIT_handler)
+        #signal.signal(signal.SIGQUIT, self.SIGQUIT_handler)
 
     def add_params(_self, **kwargs):
         if not _self.frozen:

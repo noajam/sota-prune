@@ -23,14 +23,14 @@ class MnistNet(nn.Module):
         """
         
         layers = []
-        layers += [nn.Conv2d(3, 20, 5, 1)]
+        layers += [nn.Conv2d(1, 20, 5, 1)]
         layers += [nn.ReLU()]
         layers += [nn.MaxPool2d(2, 2)]
         layers += [nn.Conv2d(20, 50, 5, 1)]
         layers += [nn.ReLU()]
         layers += [nn.MaxPool2d(2, 2)]
         layers += [nn.Flatten()]
-        layers += [nn.Linear(5*5*50, 500)]
+        layers += [nn.Linear(4*4*50, 500)]
         layers += [nn.ReLU()]
         layers += [nn.Linear(500, 10)]
         self.layers = nn.Sequential(*layers)

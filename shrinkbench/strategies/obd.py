@@ -50,8 +50,8 @@ class OptimalBrainDamage(VisionPruning):
         
     def map_importances_obd(self, fn):
         return {module:
-                {param: fn(importance, 2*i + j)
-                    for j, (param, importance) in enumerate(params.items())}
+                {param: fn(importance, i)
+                    for param, importance in params.items() if param == 'weight'}
                 for i, (module, params) in enumerate(self.params().items())}
         
 
@@ -100,15 +100,11 @@ class OptimalBrainDamage(VisionPruning):
                 if not (isinstance(prev_m, nn.Conv2d) and isinstance(m, nn.Conv2d)):
                     if flag:
                         prev_hessians.append(m.weight.diag_h.data.cpu().detach().numpy())
-                        prev_hessians.append(m.bias.diag_h.data.cpu().detach().numpy())
                     else:
                         prev_hessians[cnt] += m.weight.diag_h.data.cpu().detach().numpy()
                         cnt += 1
-                        prev_hessians[cnt] += m.bias.diag_h.data.cpu().detach().numpy()
-                        cnt += 1
         
                     m.weight.diag_h[:] = 0
-                    m.bias.diag_h[:] = 0
         
             prev_m = m
         

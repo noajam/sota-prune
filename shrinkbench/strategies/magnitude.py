@@ -31,6 +31,7 @@ class GlobalMagWeight(VisionPruning):
         return masks
     
 
+# Deprecated because bias is no longer included in any pruning method
 class GlobalMagNoBias(VisionPruning):
 
     def model_masks(self):
@@ -56,6 +57,7 @@ class LayerMagWeight(LayerPruning, VisionPruning):
         return masks
 
 
+# Deprecated
 class LayerMagNoBias(LayerPruning, VisionPruning):
 
     def layer_masks(self, module):

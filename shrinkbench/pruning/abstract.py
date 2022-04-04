@@ -78,12 +78,13 @@ class Pruning(ABC):
         rows = []
         for name, module in self.model.named_modules():
             for pname, param in module.named_parameters(recurse=False):
-                if isinstance(module, MaskedModule):
-                    compression = 1/getattr(module, pname+'_mask').detach().cpu().numpy().mean()
-                else:    
-                    compression = 1
-                shape = param.detach().cpu().numpy().shape
-                rows.append([name, pname, compression, np.prod(shape), shape, self.can_prune(module)])
+                if pname == 'weight':
+                    if isinstance(module, MaskedModule):
+                        compression = 1/getattr(module, pname+'_mask').detach().cpu().numpy().mean()
+                    else:    
+                        compression = 1
+                    shape = param.detach().cpu().numpy().shape
+                    rows.append([name, pname, compression, np.prod(shape), shape, self.can_prune(module)])
         columns = ['module', 'param', 'comp', 'size', 'shape', 'prunable']
         return pd.DataFrame(rows, columns=columns)
 

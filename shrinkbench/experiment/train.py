@@ -174,7 +174,7 @@ class TrainingExperiment(Experiment):
         acc5 = OnlineStats()
 
         epoch_iter = tqdm(dl)
-        epoch_iter.set_description(f"{prefix.capitalize()} Epoch {epoch}/{self.epochs}")
+        epoch_iter.set_description(f"{prefix.capitalize()} Epoch {epoch + 1}/{self.epochs}")
 
         with torch.set_grad_enabled(train):
             for i, (x, y) in enumerate(epoch_iter, start=1):
