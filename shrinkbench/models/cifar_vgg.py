@@ -79,6 +79,8 @@ class VGGBnDrop(nn.Module):
         layers += [ConvBNReLU(512, 512)]
         layers += [nn.MaxPool2d(2, 2, ceil_mode=True)]
         
+        layers += [nn.Flatten()]
+        
         layers += [nn.Dropout(0.5)]
         layers += [nn.Linear(512, 512)]
         layers += [nn.BatchNorm1d(512)]

@@ -40,8 +40,8 @@ class SynFlow(GradientMixin, VisionPruning):
             # model.float()
             for name, param in model.state_dict().items():
                 param.mul_(signs[name])
-        
-        self.model.train()
+
+        self.model.eval()
         signs = linearize(self.model)
 
         input_dim = list(self.inputs[0,:].shape)

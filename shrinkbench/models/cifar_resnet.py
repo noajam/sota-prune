@@ -139,7 +139,7 @@ def resnet_factory(filters, num_classes, name):
 resnet20 = resnet_factory([3, 3, 3], 10, 'resnet20')
 resnet32 = resnet_factory([5, 5, 5], 10, 'resnet32')
 resnet44 = resnet_factory([7, 7, 7], 10, 'resnet44')
-resnet56 = resnet_factory([9, 9, 9], 10, 'resnet56')
+resnet56 = resnet_factory([9, 9, 9], 100, 'resnet56')
 resnet110 = resnet_factory([18, 18, 18], 10, 'resnet110')
 resnet1202 = resnet_factory([200, 200, 200], 10, 'resnet1202')
 

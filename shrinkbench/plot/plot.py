@@ -1,6 +1,7 @@
 from collections import defaultdict
 from ..util import AutoMap
 import matplotlib.pyplot as plt
+import matplotlib
 
 COLORS = defaultdict(lambda: AutoMap(plt.get_cmap('Set1').colors))
 LINES = defaultdict(lambda: AutoMap(['-', '--', ':', '-.']))
@@ -30,7 +31,14 @@ def plot_df(df,
             suffix='',
             aggregate=True, **plt_kwargs):
     global COLORS, LINES, MARKERS, LINESTYLES
+    
+    plt.style.use(['science', 'ieee'])
+    font = {'size'   : 12}
+    labelsize = {'axes.labelsize': 16}
 
+    matplotlib.rc('font', **font)
+    plt.rcParams.update(labelsize)
+    
     colors_column = colors
     lines_column = lines
     markers_column = markers
@@ -51,15 +59,16 @@ def plot_df(df,
     for items, dfg in df.sort_values(by=groups).groupby(groups):
         if not isinstance(items, tuple):
             items = (items, )
-
         kwargs = {}
         kwargs.update(plt_kwargs)
         label = ""
         if colors_column is not None:
             i, *items = items
+            if i == 'Lamp':
+                i = 'LAMP'
             label += f"{i} - "
             kwargs['color'] = COLORS[colors_column][i]
-
+            
         if lines_column is not None:
             i, *items = items
             if lines_column != colors_column:
@@ -80,7 +89,7 @@ def plot_df(df,
 
         if marker is not None:
             kwargs['marker'] = marker
-
+            
         label = label[:-3] + suffix
 
         dfg = dfg.sort_values(x_column, ascending=True)
@@ -107,11 +116,27 @@ def plot_df(df,
                     kwargs['label'] = None
                 dfg_ = dfg_.sort_values(x_column)
                 plt.plot(dfg_[x_column].values, dfg_[y_column].values, **kwargs)
-
-    plt.xlabel(x_column)
-    plt.ylabel(y_column)
+                
+    if x_column == 'compression':
+        plt.xlabel('Compression')
+    elif x_column == 'speedup':
+        plt.xlabel('Theoretical Speedup')
+    else:
+        plt.xlabel(x_column)
+    
+    if y_column == 'post_acc5':
+        plt.ylabel('Top-5 Test Accuracy')
+    elif y_column == 'post_acc1':
+        plt.ylabel('Top-1 Test Accuracy')
+    elif y_column == 'compression_err':
+        plt.ylabel('Compression Error')
+    else:
+        plt.ylabel(y_column)
+        
     if x_column in ('compression', 'speedup'):
         plt.xscale('log')
+        
     ticks = sorted(set(df[x_column]))
-    plt.xticks(ticks, map(str, ticks))
+    plt.xticks(ticks, map(str, ticks), fontsize=16)
+    plt.yticks(fontsize=16)
     plt.legend()

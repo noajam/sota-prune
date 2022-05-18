@@ -27,6 +27,9 @@ from .utils import (fraction_threshold,
 class GraSP(GradientMixin, VisionPruning):
 
     def model_masks(self):
+        for layer in self.model.modules():
+            if isinstance(layer, nn.Conv2d) or isinstance(layer, nn.Linear):
+                nn.init.xavier_normal_(layer.weight)
         params = self.params()
         grads = self.param_gradients()
         
